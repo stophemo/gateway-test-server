@@ -24,7 +24,7 @@ public class TrdmkServiceImpl implements TrdmkService {
     @Override
     public HelloOutputDTO hello() {
         HelloOutputDTO helloOutputDTO = new HelloOutputDTO();
-        helloOutputDTO.setText("Hello World!");
+        helloOutputDTO.setText("serverA -- mk3 -- hello");
         return helloOutputDTO;
     }
 

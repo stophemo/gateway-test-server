@@ -16,17 +16,16 @@ public class SecmkServiceImpl implements SecmkService {
 
 
 
-    /**
-     * 
-     *
-     */
+
+
+
     @Override
-    public HelloOutputDTO hello() {
+    public HelloOutputDTO hello(String name) {
         HelloOutputDTO helloOutputDTO = new HelloOutputDTO();
-        helloOutputDTO.setText("serverA -- mk2 -- hello");
+        helloOutputDTO.setText("serverC -- mk2 : Hello " + name);
         return helloOutputDTO;
     }
-
+    
 }
 
 

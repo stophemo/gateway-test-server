@@ -1,18 +1,18 @@
 package com.test.kfwg.service.impl;
 
-import com.test.kfwg.dto.firmk.HelloOutputDTO;
-import com.test.kfwg.service.FirmkService;
+import com.test.kfwg.dto.trdmk.HelloOutputDTO;
+import com.test.kfwg.service.TrdmkService;
 import org.springframework.stereotype.Service;
 
 
 /**
- * 模块一Service实现类
+ * 模块三Service实现类
  *
  * @author 霍杰
  * @date 2024/01/31
  */
 @Service
-public class FirmkServiceImpl implements FirmkService {
+public class TrdmkServiceImpl implements TrdmkService {
 
 
 
@@ -24,7 +24,7 @@ public class FirmkServiceImpl implements FirmkService {
     @Override
     public HelloOutputDTO hello() {
         HelloOutputDTO helloOutputDTO = new HelloOutputDTO();
-        helloOutputDTO.setText("serverA -- mk1 -- hello");
+        helloOutputDTO.setText("serverB -- mk3 -- hello");
         return helloOutputDTO;
     }
 

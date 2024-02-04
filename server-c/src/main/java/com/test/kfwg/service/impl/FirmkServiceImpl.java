@@ -22,9 +22,9 @@ public class FirmkServiceImpl implements FirmkService {
      * @return 出参
      */
     @Override
-    public HelloOutputDTO hello() {
+    public HelloOutputDTO hello(String name) {
         HelloOutputDTO helloOutputDTO = new HelloOutputDTO();
-        helloOutputDTO.setText("serverA -- mk1 -- hello");
+        helloOutputDTO.setText("serverC -- mk1 : Hello " + name);
         return helloOutputDTO;
     }
 

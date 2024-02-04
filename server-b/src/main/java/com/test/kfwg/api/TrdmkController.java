@@ -1,7 +1,7 @@
 package com.test.kfwg.api;
 
-import com.test.kfwg.service.TrdmkService;
 import com.test.kfwg.dto.trdmk.HelloOutputDTO;
+import com.test.kfwg.service.TrdmkService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
