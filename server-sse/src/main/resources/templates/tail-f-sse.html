@@ -1,0 +1,274 @@
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>控制台</title>
+</head>
+
+<body>
+<div id="container" style="width:100%;height:100%;overflow:auto">
+    <div id="logContainer">
+        <select id="selector" name="list" size="25"></select>
+    </div>
+    <div id="opts">
+        <div class="option" id="saveAs">
+            <a onclick="saveAs()" title="保存当前页面加载的日志内容到文件">保存</a>
+        </div>
+        <div class="option" id="downloadAs">
+            <a onclick="downloadAs()" title="需配置项：com.tfswx.component.tail-f.local-output={server-path}">下载</a>
+        </div>
+        <div class="option" id="toTop">
+            <a onclick="toTop()">顶部</a>
+        </div>
+        <div class="option" id="toBottom">
+            <a onclick="toBottom()">底部</a>
+        </div>
+        <div class="option" id="newLine">
+            <a onclick="newLine()">空行</a>
+        </div>
+        <div class="option" id="clearLogs">
+            <a onclick="clearLogs()">清空</a>
+        </div>
+        <div class="option" id="ctrlc">
+            <a onclick="ctrlc()">断开</a>
+        </div>
+        <div class="option" id="rec">
+            <a onclick="rec()">重连</a>
+        </div>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    (function () {
+        const selector = document.querySelector("#selector");
+
+        document.onkeydown = function (e) {
+            var keyNum = window.event ? e.keyCode : e.which;
+            if (keyNum === 13) {
+                appendLine("");
+            } else if (67 === e.keyCode && e.ctrlKey) {
+                ctrlc();
+            }
+        }
+
+        window.generateUUID = () => {
+            var d = new Date().getTime();
+            if (window.performance && typeof window.performance.now === "function") {
+                d += performance.now();
+            }
+            return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+                var r = (d + Math.random() * 16) % 16 | 0;
+                d = Math.floor(d / 16);
+                return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+            });
+        };
+
+        window.saveAs = async function () {
+            const fileName = "out.log";
+            let str = "";
+            let count = selector.options.length;
+            if (count === 0) {
+                alert("没有内容可保存");
+                return;
+            }
+            for (let i = 0; i < count; i++) {
+                str += selector.options[i].title;
+                str += "\n";
+            }
+            const content = str
+            const blob = new Blob([content], {
+                type: 'application/text'
+            }) // 构造一个blob对象来处理数据
+            // 对于<a>标签，只有 Firefox 和 Chrome（内核） 支持 download 属性
+            // IE10以上支持blob但是依然不支持download
+            if ('download' in document.createElement('a')) { // 支持a标签download的浏览器
+                const link = document.createElement('a') // 创建a标签
+                link.download = fileName // a标签添加属性
+                link.style.display = 'none'
+                link.href = URL.createObjectURL(blob)
+                document.body.appendChild(link)
+                link.click() // 执行下载
+                URL.revokeObjectURL(link.href) // 释放url
+                document.body.removeChild(link) // 释放标签
+            } else { // 其他浏览器
+                navigator.msSaveBlob(blob, fileName)
+            }
+        };
+
+        window.downloadAs = async function () {
+            const downloadUrl = window.location.origin + window.location.pathname + "/download";
+            window.open(downloadUrl);
+        };
+
+        window.toTop = async function () {
+            if (selector.options.length > 0) {
+                selector.options[0].selected = true;
+            }
+        };
+
+        window.toBottom = async function () {
+            let count = selector.options.length;
+            if (count > 0) {
+                selector.options[count - 1].selected = true;
+            }
+        };
+
+        window.clearLogs = async function () {
+            selector.innerHTML = null;
+            logCount = 0;
+            appendLine("控制台已清空");
+        };
+
+        window.ctrlc = async function () {
+            await closeSocket();
+        };
+
+        window.rec = async function () {
+            window.location.reload();
+        };
+
+        window.newLine = async function () {
+            appendLine("");
+        }
+
+        let socket;
+        let userId = generateUUID();
+
+        window.logCount = 0;
+
+        window.appendLine = async function (line) {
+            const opt = document.createElement("option");
+            opt.innerHTML = line;
+            opt.title = line;
+            selector.appendChild(opt);
+            opt.selected = true;
+
+            if (logCount > 88888888) {
+                selector.options[0].remove();
+            } else {
+                logCount++;
+            }
+        }
+
+        window.openEventSource = async function () {
+            eventSource = new EventSource("/tail-f/connect");
+            document.title = "控制台 " + userId;
+            //打开事件
+            eventSource.onopen = function () {
+                console.log("控制台已连接");
+                appendLine("控制台已连接");
+            };
+            //获得消息事件
+            eventSource.onmessage = function (msg) {
+                appendLine(msg.data);
+            };
+            //关闭事件
+            eventSource.onclose = function () {
+                console.log("控制台已断开连接");
+                appendLine("控制台已断开连接");
+            };
+            //发生了错误事件
+            eventSource.onerror = function (e) {
+                console.log("控制台发生了错误：" + e.code)
+                console.log(e)
+                appendLine("控制台发生了错误");
+            }
+
+            return eventSource;
+        }
+
+        window.closeEventSource = function (eventSource) {
+            eventSource.close(); // 关闭SSE连接
+        }
+        window.closeEventSource = async function () {
+            if (socket != null) {
+                eventSource.close();
+                eventSource = null;
+            } else {
+                await appendLine("控制台已断开连接");
+            }
+        }
+
+        // 页面加载时调用打开SSE连接的函数
+        // document.addEventListener("DOMContentLoaded", function () {
+            openEventSource();
+        // });
+    })();
+</script>
+
+<style>
+    select {
+        max-width: 100%;
+        min-width: 100%;
+        max-height: 96%;
+        min-height: 96%;
+        border: none;
+        padding: 0%;
+        background-color: black;
+        color: white;
+    }
+
+    option {
+        padding-left: 8px;
+    }
+
+    * {
+        padding: 0;
+        margin: 0;
+    }
+
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+    }
+
+    #logContainer {
+        width: calc(100% - 150px);
+        margin: 0 auto;
+        border: 1px solid #000;
+        padding: 6px;
+        word-break: break-word;
+        font-size: 14px;
+    }
+
+    pre {
+        white-space: pre-wrap;
+        white-space: -moz-pre-wrap;
+        white-space: -o-pre-wrap;
+        word-wrap: break-word;
+    }
+
+    #opts {
+        position: fixed;
+        right: 19px;
+        bottom: 40px;
+    }
+
+    .option {
+        margin-top: 6px;
+        padding: 6px;
+        color: #000;
+        border: 1px solid #000;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    .option:hover {
+        color: #555;
+    }
+
+    .errorStackMask table {
+        width: 100%;
+    }
+
+    .errorStackMask td {
+        padding: 4px;
+        word-break: break-word;
+    }
+</style>
+
+</html>
