@@ -1,0 +1,7 @@
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  com.tfswx.component.tailfweb.sse.config.TailFSystemOutEnvironmentPostProcessor
+# Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.tfswx.component.tailfweb.sse.config.TailFConfig,\
+  com.tfswx.component.tailfweb.sse.config.TailFAutoConfigure,\
+  com.tfswx.component.tailfweb.sse.config.TailFDisableAutoConfigure

@@ -1,6 +1,6 @@
 plugins {
-    id 'org.springframework.boot' version '2.6.13'
-    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'org.springframework.boot' version '2.7.2'
+    id 'io.spring.dependency-management' version '1.0.12.RELEASE'
     id 'java'
 }
 
@@ -9,17 +9,15 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 repositories {
-    mavenCentral()
+    maven {
+        allowInsecureProtocol true
+        url "http://192.168.7.197:8081/repository/maven-public/"
+    }
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
     // 引入lombok
     implementation 'org.projectlombok:lombok:1.18.22'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
+    implementation("com.tfswx:tf-spring-boot-component-tail-f-web:1.0.0-SNAPSHOT")
 }

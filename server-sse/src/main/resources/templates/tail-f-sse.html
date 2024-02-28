@@ -54,7 +54,7 @@
             }
         }
 
-        window.generateUUID = () => {
+        window.generateUserId = () => {
             var d = new Date().getTime();
             if (window.performance && typeof window.performance.now === "function") {
                 d += performance.now();
@@ -134,7 +134,7 @@
             appendLine("");
         }
 
-        let socket;
+        let source;
         let userId = generateUUID();
 
         window.logCount = 0;
@@ -154,24 +154,29 @@
         }
 
         window.openEventSource = async function () {
-            eventSource = new EventSource("/tail-f/connect");
             document.title = "控制台 " + userId;
+            if (eventSource != null) {
+                eventSource.close();
+                eventSource = null;
+            }
+            // 建立连接
+            source = new EventSource("/tail-f/connect");
             //打开事件
-            eventSource.onopen = function () {
+            source.onopen = function () {
                 console.log("控制台已连接");
                 appendLine("控制台已连接");
             };
             //获得消息事件
-            eventSource.onmessage = function (msg) {
+            source.onmessage = function (msg) {
                 appendLine(msg.data);
             };
             //关闭事件
-            eventSource.onclose = function () {
+            source.onclose = function () {
                 console.log("控制台已断开连接");
                 appendLine("控制台已断开连接");
             };
             //发生了错误事件
-            eventSource.onerror = function (e) {
+            source.onerror = function (e) {
                 console.log("控制台发生了错误：" + e.code)
                 console.log(e)
                 appendLine("控制台发生了错误");
@@ -180,22 +185,19 @@
             return eventSource;
         }
 
-        window.closeEventSource = function (eventSource) {
-            eventSource.close(); // 关闭SSE连接
-        }
         window.closeEventSource = async function () {
-            if (socket != null) {
-                eventSource.close();
-                eventSource = null;
+            if (source != null) {
+                source.close();
+                source = null;
             } else {
                 await appendLine("控制台已断开连接");
             }
         }
 
         // 页面加载时调用打开SSE连接的函数
-        // document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function () {
             openEventSource();
-        // });
+        });
     })();
 </script>
 
