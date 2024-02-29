@@ -24,7 +24,7 @@ public class FirmkServiceImpl implements FirmkService {
     @Override
     public HelloOutputDTO hello() {
         HelloOutputDTO helloOutputDTO = new HelloOutputDTO();
-        helloOutputDTO.setText("serverA -- mk1 -- hello");
+//        helloOutputDTO.setText("serverA -- mk1 -- hello");
         return helloOutputDTO;
     }
 

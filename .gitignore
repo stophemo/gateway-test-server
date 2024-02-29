@@ -5,6 +5,7 @@
 build/
 out/
 .idea
+*/.idea
 gradle/
 gradlew
 */gradlew

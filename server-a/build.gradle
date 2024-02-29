@@ -19,5 +19,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     // 引入lombok
     implementation 'org.projectlombok:lombok:1.18.22'
-    implementation("com.tfswx:tf-spring-boot-component-tail-f-web:1.0.0-SNAPSHOT")
+//    implementation("com.tfswx:tf-spring-boot-component-tail-f-web:1.0.0-SNAPSHOT")
+    implementation("com.tfswx:tf-spring-boot-component-tail-f-web-sse:1.0.0-SNAPSHOT")
 }
