@@ -1,6 +1,5 @@
 package com.tfswx.component.tailfweb.sse.service.Impl;
 
-import com.tfswx.component.tailfweb.sse.service.TailFService;
 import com.tfswx.component.tailfweb.sse.util.SseEmitterUtil;
 import com.tfswx.futool.io.common.AdditionalOutputStream;
 import com.tfswx.futool.io.piped.TfAlwaysPipedOutputStream;

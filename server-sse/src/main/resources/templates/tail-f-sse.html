@@ -54,7 +54,7 @@
             }
         }
 
-        window.generateUserId = () => {
+        window.generateUUID = () => {
             var d = new Date().getTime();
             if (window.performance && typeof window.performance.now === "function") {
                 d += performance.now();
@@ -155,9 +155,9 @@
 
         window.openEventSource = async function () {
             document.title = "控制台 " + userId;
-            if (eventSource != null) {
-                eventSource.close();
-                eventSource = null;
+            if (source != null) {
+                source.close();
+                source = null;
             }
             // 建立连接
             source = new EventSource("/tail-f/connect");
@@ -182,7 +182,7 @@
                 appendLine("控制台发生了错误");
             }
 
-            return eventSource;
+            return source;
         }
 
         window.closeEventSource = async function () {
@@ -194,10 +194,7 @@
             }
         }
 
-        // 页面加载时调用打开SSE连接的函数
-        document.addEventListener("DOMContentLoaded", function () {
-            openEventSource();
-        });
+        openEventSource();
     })();
 </script>
 

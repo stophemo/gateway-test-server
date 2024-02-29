@@ -1,14 +1,11 @@
 package com.tfswx.component.tailfweb.sse.config;
 
 import com.tfswx.component.tailfweb.sse.api.TailFController;
-import com.tfswx.component.tailfweb.sse.service.Impl.SseCentreServiceImpl;
 import com.tfswx.component.tailfweb.sse.service.Impl.TailFServiceImpl;
 import com.tfswx.component.tailfweb.sse.startup.TailFReadyEventListener;
 import com.tfswx.futool.io.utils.TfIOUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -23,7 +20,6 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @Import({TailFServiceImpl.class,
         TailFReadyEventListener.class,
-        SseCentreServiceImpl.class,
         TailFController.class})
 @ConditionalOnProperty(prefix = "com.tfswx.component.tail-f", value = "enable", havingValue = "true", matchIfMissing = true)
 @ComponentScan("com.tfswx.component.tailfweb")

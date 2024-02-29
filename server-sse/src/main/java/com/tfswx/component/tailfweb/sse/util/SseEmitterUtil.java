@@ -50,9 +50,9 @@ public class SseEmitterUtil {
         sseEmitter.onError(errorCallBack(userId));
         sseEmitter.onTimeout(timeoutCallBack(userId));
         sseEmitterMap.put(userId, sseEmitter);
-        // 数量+1
-        count.getAndIncrement();
-        log.info("【WEB控制台】有新的连接：{}", userId);
+        // 更新数量
+        count.getAndSet(sseEmitterMap.size());
+        log.info("【WEB控制台】有新的连接：{}, 当前连接数：{}", userId, count);
         return sseEmitter;
     }
 
@@ -97,8 +97,8 @@ public class SseEmitterUtil {
     public static void removeUser(String userId) {
         sseEmitterMap.remove(userId);
         // 数量-1
-        count.getAndDecrement();
-        log.info("【WEB控制台】移除用户：{}", userId);
+        count.getAndSet(sseEmitterMap.size());
+        log.info("【WEB控制台】移除用户：{}, 当前连接数：{}", userId, count);
     }
 
     /**

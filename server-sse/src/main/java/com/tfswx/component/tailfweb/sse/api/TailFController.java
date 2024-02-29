@@ -2,6 +2,7 @@ package com.tfswx.component.tailfweb.sse.api;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import com.tfswx.component.tailfweb.sse.config.TailFAutoConfigure;
 import com.tfswx.component.tailfweb.sse.config.TailFConfig;
 import com.tfswx.component.tailfweb.sse.service.TailFService;
 import com.tfswx.component.tailfweb.sse.util.SseEmitterUtil;
@@ -13,12 +14,10 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.annotation.Resource;
@@ -28,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
@@ -43,36 +43,20 @@ public class TailFController {
     @Resource
     private TailFConfig tailFConfig;
 
-    @Autowired
-    private HttpServletRequest request;
-
+    @ResponseBody
     @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
-    public String index(Model model) {
-        return "tail-f-sse";
+    public void index(HttpServletResponse response) throws IOException {
+        String rtnText = TailFAutoConfigure.PAGE_HTML;
+
+        response.setContentType(MediaType.TEXT_HTML_VALUE);
+        try (OutputStream outputStream = response.getOutputStream()) {
+            outputStream.write(rtnText.getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     @GetMapping(path = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter connect() {
-        String userIp = request.getRemoteAddr();
-        return SseEmitterUtil.connect(userIp);
-    }
-
-    /**
-     * 推送给所有人
-     *
-     * @param logs
-     * @return
-     */
-    @GetMapping("/push/{logs}")
-    public ResponseEntity<String> push(@PathVariable(name = "logs") String logs) {
-        // 获取连接人数
-        int userCount = SseEmitterUtil.getUserCount();
-        // 如果无在线人数，返回
-        if (userCount < 1) {
-            return ResponseEntity.status(500).body("无人在线！");
-        }
-        SseEmitterUtil.batchSendMessage(logs);
-        return ResponseEntity.ok("发送成功！");
+        return tailFService.connect();
     }
 
     @ApiOperation("下载日志")
