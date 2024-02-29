@@ -28,7 +28,7 @@ public class TailFAutoConfigure {
     public static String PAGE_HTML;
 
     public TailFAutoConfigure(TailFConfig tailFConfig) {
-        try (InputStream inputStream = this.getClass().getResourceAsStream("/templates/tail-f-sse.html")) {
+        try (InputStream inputStream = this.getClass().getResourceAsStream("/static/tail-f-sse.html")) {
             byte[] bytes = TfIOUtils.toByteArray(inputStream);
             String html = new String(bytes, StandardCharsets.UTF_8);
             PAGE_HTML = html.replace("88888888", String.valueOf(tailFConfig.getLines()));
